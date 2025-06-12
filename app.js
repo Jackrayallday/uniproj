@@ -46,7 +46,7 @@ app.post('/login', (req, res) => {
       console.error("Bcrypt error:", err);
       return res.status(500).json({ success: false, message: "Internal error" });
     }
-
+//test
     if (result) {
       console.log(`Login successful. Role: ${user.role}`);
       return res.json({ success: true, role: user.role, message: "Login successful" });
