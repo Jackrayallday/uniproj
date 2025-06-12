@@ -4,31 +4,43 @@ const fs = require('fs');
 const path = require('path');
 const bcrypt = require('bcrypt');
 const session = require('express-session');
+const rateLimit = require('express-rate-limit');
 const app = express();
 app.use(express.static('public'));
 const PORT = 3000;
 
-// Middleware: makes it possible to read form data
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// Session middleware setup
 app.use(
   session({
     secret: 'uniproj-secret-key',
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: false }
+    cookie: {
+      secure: false,
+      maxAge: 15 * 60 * 1000 // 15 minutes
+    }
   })
 );
+
+//  Rate limiter
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  message: {
+    success: false,
+    message: "Too many login attempts. Please try again later."
+  }
+});
 
 // Route: basic homepage
 app.get('/', (req, res) => {
   res.send('Welcome to UniProj! This is your course manager backend.');
 });
 
-// Route: login handler
-app.post('/login', (req, res) => {
+// Apply rate limiter to login only
+app.post('/login', loginLimiter, (req, res) => {
   const { email, password } = req.body;
   console.log("Received login:", email, password);
 
