@@ -1,0 +1,17 @@
+[
+  {
+    "email": "tiger.woods@golf.com",
+    "passwordHash": "$2b$10$oMuCzo5Za5cZwlp8Vwe5.u/NUrYKwr.lH2W/rr2tPE08abOCpxQjW",
+    "role": "student"
+  },
+  {
+    "email": "babe.ruth@mlb.com",
+    "passwordHash": "$2b$10$NWJENmHRf3zfYEXinQmVYeoMVGWa8d839ejwhLxK0Y1uSH7/T1ymS",
+    "role": "instructor"
+  },
+  {
+    "email": "shohei.ohtani@mlb.com",
+    "passwordHash": "$2b$10$0N8H2YUGG8OC7.Fk5ma6tOckUkOmRrokF37IFXmZ69elMC4fuauni",
+    "role": "admin"
+  }
+]
