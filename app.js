@@ -3,6 +3,7 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const bcrypt = require('bcrypt');
+const session = require('express-session');
 const app = express();
 app.use(express.static('public'));
 const PORT = 3000;
@@ -10,6 +11,16 @@ const PORT = 3000;
 // Middleware: makes it possible to read form data
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
+// Session middleware setup
+app.use(
+  session({
+    secret: 'uniproj-secret-key',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: false }
+  })
+);
 
 // Route: basic homepage
 app.get('/', (req, res) => {
@@ -36,24 +47,52 @@ app.post('/login', (req, res) => {
     return res.status(401).json({ success: false, message: "Invalid email or password" });
   }
 
-  if (!user.passwordHash) { 
+  if (!user.passwordHash) {
     console.error("User record missing hashedPassword");
     return res.status(500).json({ success: false, message: "Server error: bad user data" });
   }
 
-  bcrypt.compare(password, user.passwordHash, (err, result) => { 
+  bcrypt.compare(password, user.passwordHash, (err, result) => {
     if (err) {
       console.error("Bcrypt error:", err);
       return res.status(500).json({ success: false, message: "Internal error" });
     }
-//test
+
     if (result) {
+      req.session.email = user.email;
+      req.session.role = user.role;
+
       console.log(`Login successful. Role: ${user.role}`);
       return res.json({ success: true, role: user.role, message: "Login successful" });
     } else {
       console.log("Password incorrect");
       return res.status(401).json({ success: false, message: "Invalid email or password" });
     }
+  });
+});
+
+// Route: check session status
+app.get('/session', (req, res) => {
+  if (req.session.email) {
+    res.json({
+      loggedIn: true,
+      email: req.session.email,
+      role: req.session.role,
+    });
+  } else {
+    res.json({ loggedIn: false });
+  }
+});
+
+// Route: logout handler
+app.post('/logout', (req, res) => {
+  req.session.destroy(err => {
+    if (err) {
+      console.error("Logout error:", err);
+      return res.status(500).json({ success: false, message: "Logout failed" });
+    }
+    res.clearCookie('connect.sid');
+    res.json({ success: true, message: "Logged out" });
   });
 });
 
