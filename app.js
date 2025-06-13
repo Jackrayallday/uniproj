@@ -108,6 +108,29 @@ app.post('/logout', (req, res) => {
   });
 });
 
+// Middleware: require login
+function requireLogin(req, res, next) {
+  if (!req.session.email) {
+    return res.status(401).json({ success: false, message: "You must be logged in" });
+  }
+  next();
+}
+
+// Middleware: require specific role
+function requireRole(role) {
+  return function (req, res, next) {
+    if (req.session.role !== role) {
+      return res.status(403).json({ success: false, message: "Access denied" });
+    }
+    next();
+  };
+}
+
+// Example protected route
+app.get('/admin-dashboard', requireLogin, requireRole('admin'), (req, res) => {
+  res.send("Welcome to the Admin Dashboard!");
+});
+
 // Start server
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
