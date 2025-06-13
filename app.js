@@ -84,7 +84,7 @@ app.post('/login', loginLimiter, (req, res) => {
 });
 
 // Route: check session status
-app.get('/session', (req, res) => {
+app.get('/status', (req, res) => {
   if (req.session.email) {
     res.json({
       loggedIn: true,
