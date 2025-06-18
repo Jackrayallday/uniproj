@@ -1,17 +1,17 @@
-// app.js
-const express = require('express');
-const fs = require('fs');
-const path = require('path');
-const bcrypt = require('bcrypt');
-const session = require('express-session');
-const rateLimit = require('express-rate-limit');
+//import statements
+const express = require('express'); // Express framework for building web applications
+const fs = require('fs'); // File system module for reading/writing files
+const path = require('path'); // Handles file paths
+const bcrypt = require('bcrypt'); // Password hashing
+const session = require('express-session'); // Middleware for session
+const rateLimit = require('express-rate-limit'); // Rate limiter for brute force protection
+
+// Initialize express app
 const app = express();
 app.use(express.static('public'));
 const PORT = 3000;
-
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-
 app.use(
   session({
     secret: 'uniproj-secret-key',
@@ -126,9 +126,17 @@ function requireRole(role) {
   };
 }
 
-// Example protected route
+// Example protected routes by role
 app.get('/admin-dashboard', requireLogin, requireRole('admin'), (req, res) => {
   res.send("Welcome to the Admin Dashboard!");
+});
+
+app.get('/instructor-dashboard', requireLogin, requireRole('instructor'), (req, res) => {
+  res.send("Welcome to the Instructor Dashboard!");
+});
+
+app.get('/student-dashboard', requireLogin, requireRole('student'), (req, res) => {
+  res.send("Welcome to the Student Dashboard!");
 });
 
 // Start server
