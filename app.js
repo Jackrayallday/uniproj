@@ -139,6 +139,19 @@ app.get('/student-dashboard', requireLogin, requireRole('student'), (req, res) =
   res.send("Welcome to the Student Dashboard!");
 });
 
+// Route: securely serve dashboard HTML files from protected_pages
+app.get('/student.html', requireLogin, requireRole('student'), (req, res) => {
+  res.sendFile(path.join(__dirname, 'protected_pages', 'student.html'));
+});
+
+app.get('/instructor.html', requireLogin, requireRole('instructor'), (req, res) => {
+  res.sendFile(path.join(__dirname, 'protected_pages', 'instructor.html'));
+});
+
+app.get('/admin.html', requireLogin, requireRole('admin'), (req, res) => {
+  res.sendFile(path.join(__dirname, 'protected_pages', 'admin.html'));
+});
+
 // Start server
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
