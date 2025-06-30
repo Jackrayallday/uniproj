@@ -264,6 +264,18 @@ app.post('/courses/enroll', requireLogin, requireRole('admin'), (req, res) => {
   }
 
   try {
+    const usersPath = path.join(__dirname, 'data', 'users.json');
+    const users = JSON.parse(fs.readFileSync(usersPath, 'utf8'));
+    const studentUser = users.find(u => u.email === studentEmail);
+
+    if (!studentUser) {
+      return res.status(404).json({ success: false, message: "Student not found in user records." });
+    }
+
+    if (studentUser.role !== 'student') {
+      return res.status(400).json({ success: false, message: "User is not a student." });
+    }
+
     const courses = JSON.parse(fs.readFileSync(coursesPath, 'utf8'));
     const target = courses.find(c => c.course === course);
 
