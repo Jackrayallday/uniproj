@@ -152,6 +152,167 @@ app.get('/admin.html', requireLogin, requireRole('admin'), (req, res) => {
   res.sendFile(path.join(__dirname, 'protected_pages', 'admin.html'));
 });
 
+// Route: User Registration
+app.post('/register', (req, res) => {
+  const { email, password, role } = req.body;
+
+  if (!email || !password || !role) {
+    return res.status(400).json({ success: false, message: "All fields are required." });
+  }
+
+  const allowedRoles = ['student', 'instructor', 'admin'];
+  if (!allowedRoles.includes(role)) {
+    return res.status(400).json({ success: false, message: "Invalid role." });
+  }
+
+  const usersPath = path.join(__dirname, 'data', 'users.json');
+  let users = [];
+
+  try {
+    users = JSON.parse(fs.readFileSync(usersPath, 'utf8'));
+  } catch (err) {
+    console.error("Error reading users.json:", err);
+    return res.status(500).json({ success: false, message: "Error reading user data." });
+  }
+
+  const existingUser = users.find(u => u.email === email);
+  if (existingUser) {
+    return res.status(409).json({ success: false, message: "Email is already registered." });
+  }
+
+  bcrypt.hash(password, 10, (err, hash) => {
+    if (err) {
+      console.error("Bcrypt error:", err);
+      return res.status(500).json({ success: false, message: "Error processing password." });
+    }
+
+    const newUser = {
+      email,
+      passwordHash: hash,
+      role
+    };
+
+    users.push(newUser);
+
+    try {
+      fs.writeFileSync(usersPath, JSON.stringify(users, null, 2));
+      console.log("User registered:", email, role);
+      return res.json({ success: true, message: "User registered successfully." });
+    } catch (writeErr) {
+      console.error("Error writing to users.json:", writeErr);
+      return res.status(500).json({ success: false, message: "Could not save user." });
+    }
+  });
+});
+
+// Admin: Course management
+const coursesPath = path.join(__dirname, 'data', 'courses.json');
+
+app.get('/courses', requireLogin, requireRole('admin'), (req, res) => {
+  try {
+    const courses = JSON.parse(fs.readFileSync(coursesPath, 'utf8'));
+    res.json({ success: true, courses });
+  } catch (err) {
+    console.error("Error reading courses.json:", err);
+    res.status(500).json({ success: false, message: "Failed to load courses." });
+  }
+});
+
+app.post('/courses/add', requireLogin, requireRole('admin'), (req, res) => {
+  const { course, instructor } = req.body;
+
+  if (!course || !instructor) {
+    return res.status(400).json({ success: false, message: "Course and instructor are required." });
+  }
+
+  try {
+    const usersPath = path.join(__dirname, 'data', 'users.json');
+    const users = JSON.parse(fs.readFileSync(usersPath, 'utf8'));
+    const instructorUser = users.find(u => u.email === instructor);
+
+    if (!instructorUser) {
+      return res.status(404).json({ success: false, message: "Instructor not found in user records." });
+    }
+
+    if (instructorUser.role !== 'instructor') {
+      return res.status(400).json({ success: false, message: "User is not an instructor." });
+    }
+
+    let courses = [];
+    if (fs.existsSync(coursesPath)) {
+      courses = JSON.parse(fs.readFileSync(coursesPath, 'utf8'));
+    }
+
+    if (courses.find(c => c.course === course)) {
+      return res.status(409).json({ success: false, message: "Course already exists." });
+    }
+
+    courses.push({ course, instructor, students: [] });
+    fs.writeFileSync(coursesPath, JSON.stringify(courses, null, 2));
+    res.json({ success: true, message: "Course added." });
+  } catch (err) {
+    console.error("Error writing to courses.json:", err);
+    res.status(500).json({ success: false, message: "Failed to save course." });
+  }
+});
+
+app.post('/courses/enroll', requireLogin, requireRole('admin'), (req, res) => {
+  const { course, studentEmail } = req.body;
+
+  if (!course || !studentEmail) {
+    return res.status(400).json({ success: false, message: "Course and student email required." });
+  }
+
+  try {
+    const courses = JSON.parse(fs.readFileSync(coursesPath, 'utf8'));
+    const target = courses.find(c => c.course === course);
+
+    if (!target) {
+      return res.status(404).json({ success: false, message: "Course not found." });
+    }
+
+    if (!target.students.includes(studentEmail)) {
+      target.students.push(studentEmail);
+    }
+
+    fs.writeFileSync(coursesPath, JSON.stringify(courses, null, 2));
+    res.json({ success: true, message: "Student enrolled." });
+  } catch (err) {
+    console.error("Enrollment error:", err);
+    res.status(500).json({ success: false, message: "Failed to enroll student." });
+  }
+});
+
+app.post('/courses/remove-student', requireLogin, requireRole('admin'), (req, res) => {
+  const { course, studentEmail } = req.body;
+
+  if (!course || !studentEmail) {
+    return res.status(400).json({ success: false, message: "Course and student email are required." });
+  }
+
+  try {
+    const courses = JSON.parse(fs.readFileSync(coursesPath, 'utf8'));
+    const target = courses.find(c => c.course === course);
+
+    if (!target) {
+      return res.status(404).json({ success: false, message: "Course not found." });
+    }
+
+    const originalLength = target.students.length;
+    target.students = target.students.filter(email => email !== studentEmail);
+
+    if (target.students.length === originalLength) {
+      return res.status(404).json({ success: false, message: "Student not found in course." });
+    }
+
+    fs.writeFileSync(coursesPath, JSON.stringify(courses, null, 2));
+    res.json({ success: true, message: "Student removed from course." });
+  } catch (err) {
+    console.error("Error removing student:", err);
+    res.status(500).json({ success: false, message: "Failed to update course." });
+  }
+});
+
 // Start server
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
