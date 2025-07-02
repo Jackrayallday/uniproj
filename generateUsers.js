@@ -33,7 +33,7 @@ const generate = async () => {
   }
 
   fs.writeFileSync('./data/users.json', JSON.stringify(securedUsers, null, 2));
-  console.log("✅ users.json created successfully.");
+  console.log("users.json created successfully.");
 };
 
 generate();
