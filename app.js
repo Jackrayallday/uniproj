@@ -1,10 +1,17 @@
-//import statements
+// import statements
 const express = require('express'); // Express framework for building web applications
 const fs = require('fs'); // File system module for reading/writing files
 const path = require('path'); // Handles file paths
 const bcrypt = require('bcrypt'); // Password hashing
 const session = require('express-session'); // Middleware for session
 const rateLimit = require('express-rate-limit'); // Rate limiter for brute force protection
+const https = require('https'); // HTTPS server for development with self-signed certificate
+
+// Load HTTPS certificate and key
+const sslOptions = {
+  key: fs.readFileSync(path.join(__dirname, 'cert', 'key.pem')),
+  cert: fs.readFileSync(path.join(__dirname, 'cert', 'cert.pem'))
+};
 
 // Initialize express app
 const app = express();
@@ -18,13 +25,13 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: false,
+      secure: true, // Cookie only sent over HTTPS
       maxAge: 15 * 60 * 1000 // 15 minutes
     }
   })
 );
 
-//  Rate limiter
+// Rate limiter
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 5,
@@ -325,7 +332,7 @@ app.post('/courses/remove-student', requireLogin, requireRole('admin'), (req, re
   }
 });
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`Server is running at http://localhost:${PORT}`);
+// Start HTTPS server
+https.createServer(sslOptions, app).listen(PORT, () => {
+  console.log(`HTTPS server running at https://localhost:${PORT}`);
 });
