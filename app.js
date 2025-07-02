@@ -25,7 +25,7 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: true, // Cookie only sent over HTTPS
+      secure: true,
       maxAge: 15 * 60 * 1000 // 15 minutes
     }
   })
@@ -133,6 +133,31 @@ function requireRole(role) {
   };
 }
 
+// Middleware: require permission from ACL
+function requirePermission(resource, action) {
+  return function (req, res, next) {
+    const userEmail = req.session.email;
+    const aclPath = path.join(__dirname, 'data', 'acl.json');
+
+    try {
+      const acl = JSON.parse(fs.readFileSync(aclPath, 'utf8'));
+
+      if (
+        acl[userEmail] &&
+        acl[userEmail][resource] &&
+        acl[userEmail][resource].includes(action)
+      ) {
+        return next(); // Permission granted
+      } else {
+        return res.status(403).json({ success: false, message: "Access denied: insufficient ACL permission." });
+      }
+    } catch (err) {
+      console.error("Error reading ACL:", err);
+      return res.status(500).json({ success: false, message: "Server error: ACL check failed." });
+    }
+  };
+}
+
 // Example protected routes by role
 app.get('/admin-dashboard', requireLogin, requireRole('admin'), (req, res) => {
   res.send("Welcome to the Admin Dashboard!");
@@ -173,6 +198,7 @@ app.post('/register', (req, res) => {
   }
 
   const usersPath = path.join(__dirname, 'data', 'users.json');
+  const aclPath = path.join(__dirname, 'data', 'acl.json');
   let users = [];
 
   try {
@@ -203,10 +229,19 @@ app.post('/register', (req, res) => {
 
     try {
       fs.writeFileSync(usersPath, JSON.stringify(users, null, 2));
+
+      // ACL entry logic
+      const acl = JSON.parse(fs.readFileSync(aclPath, 'utf8'));
+      const defaultPermission = role === 'admin' || role === 'instructor'
+        ? ['read', 'write']
+        : ['read'];
+      acl[email] = { courses: defaultPermission };
+      fs.writeFileSync(aclPath, JSON.stringify(acl, null, 2));
+
       console.log("User registered:", email, role);
       return res.json({ success: true, message: "User registered successfully." });
     } catch (writeErr) {
-      console.error("Error writing to users.json:", writeErr);
+      console.error("Error writing files:", writeErr);
       return res.status(500).json({ success: false, message: "Could not save user." });
     }
   });
@@ -215,10 +250,27 @@ app.post('/register', (req, res) => {
 // Admin: Course management
 const coursesPath = path.join(__dirname, 'data', 'courses.json');
 
-app.get('/courses', requireLogin, requireRole('admin'), (req, res) => {
+app.get('/courses', requireLogin, requirePermission('courses', 'read'), (req, res) => {
+  const userRole = req.session.role;
+  const userEmail = req.session.email;
+
   try {
     const courses = JSON.parse(fs.readFileSync(coursesPath, 'utf8'));
-    res.json({ success: true, courses });
+
+    let filteredCourses;
+
+    if (userRole === 'admin') {
+      filteredCourses = courses;
+    } else if (userRole === 'instructor') {
+      filteredCourses = courses.filter(c => c.instructor === userEmail);
+    } else if (userRole === 'student') {
+      filteredCourses = courses.filter(c => c.students.includes(userEmail));
+    } else {
+      return res.status(403).json({ success: false, message: "Invalid role." });
+    }
+
+    res.json({ success: true, courses: filteredCourses });
+
   } catch (err) {
     console.error("Error reading courses.json:", err);
     res.status(500).json({ success: false, message: "Failed to load courses." });

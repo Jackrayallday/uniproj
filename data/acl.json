@@ -1,0 +1,20 @@
+{
+  "tiger.woods@golf.com": {
+    "courses": [
+      "read"
+    ]
+  },
+  "babe.ruth@mlb.com": {
+    "courses": [
+      "read",
+      "write"
+    ]
+  },
+  "shohei.ohtani@mlb.com": {
+    "courses": [
+      "read",
+      "write",
+      "delete"
+    ]
+  }
+}
