@@ -78,13 +78,21 @@ app.post('/login', loginLimiter, (req, res) => {
       return res.status(500).json({ success: false, message: "Internal error" });
     }
 
-    if (result) {
-      req.session.email = user.email;
-      req.session.role = user.role;
+if (result) {
+  // Regenerate session to prevent session fixation
+  req.session.regenerate(err => {
+    if (err) {
+      console.error("Session regeneration failed:", err);
+      return res.status(500).json({ success: false, message: "Login failed: session error" });
+    }
 
-      console.log(`Login successful. Role: ${user.role}`);
-      return res.json({ success: true, role: user.role, message: "Login successful" });
-    } else {
+    req.session.email = user.email;
+    req.session.role = user.role;
+
+    console.log(`Login successful. Role: ${user.role}`);
+    return res.json({ success: true, role: user.role, message: "Login successful" });
+  });
+    }else {
       console.log("Password incorrect");
       return res.status(401).json({ success: false, message: "Invalid email or password" });
     }
