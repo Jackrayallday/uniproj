@@ -168,10 +168,6 @@ function requirePermission(resource, action) {
 }
 
 // Example protected routes by role
-app.get('/admin-dashboard', requireLogin, requireRole('admin'), (req, res) => {
-  res.send("Welcome to the Admin Dashboard!");
-});
-
 app.get('/instructor-dashboard', requireLogin, requireRole('instructor'), (req, res) => {
   res.send("Welcome to the Instructor Dashboard!");
 });
