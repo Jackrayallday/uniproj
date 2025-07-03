@@ -19,5 +19,10 @@
     "students": [
       "phil.mickelson@golf.com"
     ]
+  },
+  {
+    "course": "testing",
+    "instructor": "ken.griffey@mlb.com",
+    "students": []
   }
 ]
