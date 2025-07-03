@@ -2,10 +2,19 @@
   {
     "course": "Intro to Homeruns",
     "instructor": "babe.ruth@mlb.com",
-    "students": []
+    "students": [
+      "tiger.woods@golf.com"
+    ]
   },
   {
     "course": "Walking the bases",
+    "instructor": "babe.ruth@mlb.com",
+    "students": [
+      "tiger.woods@golf.com"
+    ]
+  },
+  {
+    "course": "Swing Mechanics",
     "instructor": "babe.ruth@mlb.com",
     "students": []
   }

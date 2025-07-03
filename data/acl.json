@@ -1,0 +1,56 @@
+{
+  "tiger.woods@golf.com": {
+    "courses": [
+      "read"
+    ]
+  },
+  "babe.ruth@mlb.com": {
+    "courses": [
+      "read",
+      "write"
+    ]
+  },
+  "shohei.ohtani@mlb.com": {
+    "courses": [
+      "read",
+      "write",
+      "delete"
+    ]
+  },
+  "phil.mickelson@golf.com": {
+    "courses": [
+      "read"
+    ]
+  },
+  "rory.mcilroy@golf.com": {
+    "courses": [
+      "read"
+    ]
+  },
+  "ken.griffey@mlb.com": {
+    "courses": [
+      "read",
+      "write"
+    ]
+  },
+  "mike.trout@mlb.com": {
+    "courses": [
+      "read",
+      "write"
+    ]
+  },
+  "jack.nicklaus@golf.com": {
+    "courses": [
+      "read",
+      "write",
+      "delete"
+    ]
+  },
+  "hank.aaron@mlb.com": {
+    "courses": [
+      "read",
+      "write",
+      "delete"
+    ]
+  }
+}
