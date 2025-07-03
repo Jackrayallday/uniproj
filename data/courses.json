@@ -12,5 +12,10 @@
     "students": [
       "tiger.woods@golf.com"
     ]
+  },
+  {
+    "course": "Swing Mechanics",
+    "instructor": "babe.ruth@mlb.com",
+    "students": []
   }
 ]

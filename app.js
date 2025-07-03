@@ -26,6 +26,7 @@ app.use(
     saveUninitialized: false,
     cookie: {
       secure: true,
+      httpOnly: true,
       maxAge: 15 * 60 * 1000 // 15 minutes
     }
   })
@@ -383,6 +384,53 @@ app.post('/courses/remove-student', requireLogin, requireRole('admin'), (req, re
     res.status(500).json({ success: false, message: "Failed to update course." });
   }
 });
+
+app.post('/acl/update', requireLogin, requireRole('admin'), (req, res) => {
+  const { email, resource, action, operation } = req.body;
+
+  if (!email || !resource || !action || !['add', 'remove'].includes(operation)) {
+    return res.status(400).json({ success: false, message: "Missing or invalid fields." });
+  }
+
+  const aclPath = path.join(__dirname, 'data', 'acl.json');
+  let acl;
+
+  try {
+    acl = JSON.parse(fs.readFileSync(aclPath, 'utf8'));
+  } catch (err) {
+    console.error("Error reading ACL:", err);
+    return res.status(500).json({ success: false, message: "Server error: could not read ACL." });
+  }
+
+  // Initialize if missing
+  if (!acl[email]) {
+    acl[email] = {};
+  }
+  if (!acl[email][resource]) {
+    acl[email][resource] = [];
+  }
+
+  if (operation === 'add') {
+    if (!acl[email][resource].includes(action)) {
+      acl[email][resource].push(action);
+    }
+  } else if (operation === 'remove') {
+    acl[email][resource] = acl[email][resource].filter(a => a !== action);
+    // Clean up empty resource arrays
+    if (acl[email][resource].length === 0) {
+      delete acl[email][resource];
+    }
+  }
+
+  try {
+    fs.writeFileSync(aclPath, JSON.stringify(acl, null, 2));
+    return res.json({ success: true, message: `ACL ${operation} operation successful.` });
+  } catch (writeErr) {
+    console.error("Error writing ACL:", writeErr);
+    return res.status(500).json({ success: false, message: "Could not update ACL." });
+  }
+});
+
 
 // Start HTTPS server
 https.createServer(sslOptions, app).listen(PORT, () => {

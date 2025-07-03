@@ -1,17 +1,47 @@
 [
   {
     "email": "tiger.woods@golf.com",
-    "passwordHash": "$2b$10$TOOEN9ndrEr9Hp6dI8ScEuWhD43VVzBnVF9GEuNh/50ipGbcRzzce",
+    "passwordHash": "$2b$10$MGkNMqIQkJfrYJSGV58zOOMDlXwH9irGW5M2Zs9StDLMBrTs9FxKm",
+    "role": "student"
+  },
+  {
+    "email": "phil.mickelson@golf.com",
+    "passwordHash": "$2b$10$OsQu3BnT8rY8lZLwtZkSTejKwkJQWKcm1e7uv3.ZDuOnchKlXfBhi",
+    "role": "student"
+  },
+  {
+    "email": "rory.mcilroy@golf.com",
+    "passwordHash": "$2b$10$Q9RCNtRaG/kejPkgz8Ts6OhAKmiEz0NZUJnhWyXaJeHNZq/d4hgFy",
     "role": "student"
   },
   {
     "email": "babe.ruth@mlb.com",
-    "passwordHash": "$2b$10$q1PYgglXCebESLrJO.XuhuxWuWpWHvvt1cM/1FLlcuDHPzbTdAo8.",
+    "passwordHash": "$2b$10$bC7D/nGxtUo.oIKgwK3NgO689vwUjZNGzAsXUkMOZzAi.jQlGlnz.",
+    "role": "instructor"
+  },
+  {
+    "email": "ken.griffey@mlb.com",
+    "passwordHash": "$2b$10$gaZ4sgQ9vW4OmYk4FqFC7ONDuUZvI7j4mlGJqoypdQqjssPztKb6G",
+    "role": "instructor"
+  },
+  {
+    "email": "mike.trout@mlb.com",
+    "passwordHash": "$2b$10$n3tnuLJAYENDn4qSP.8Ate6mk.y1w0BNtgWBdRmIVmSXBQxe.R2I.",
     "role": "instructor"
   },
   {
     "email": "shohei.ohtani@mlb.com",
-    "passwordHash": "$2b$10$zo9aOM9CelihOC/0OchSfeH5RF7XLjZe5v1K/pxBQWLNQdADGd3eK",
+    "passwordHash": "$2b$10$XBCiueLXDYRuhyVrnR/MaOMhNrYgUdMPOeRjVIgIRUhsn9kml6GVi",
+    "role": "admin"
+  },
+  {
+    "email": "jack.nicklaus@golf.com",
+    "passwordHash": "$2b$10$d16r3XVASm/UzigTkTIsyudpqkZwOegPnpQ1V9iKYIwfo5rzwhboG",
+    "role": "admin"
+  },
+  {
+    "email": "hank.aaron@mlb.com",
+    "passwordHash": "$2b$10$jfNrkBSkMZgtyjPSJbr7Z.6BMn8BL1yOHNWgQWABZo353JxnxsH0G",
     "role": "admin"
   }
 ]

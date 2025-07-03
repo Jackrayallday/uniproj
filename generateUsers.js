@@ -7,22 +7,58 @@ const usersPath = path.join(__dirname, 'data', 'users.json');
 const aclPath = path.join(__dirname, 'data', 'acl.json');
 
 const users = [
+  // Students (Golfers)
   {
     email: "tiger.woods@golf.com",
     password: "woods123",
     role: "student"
   },
   {
+    email: "phil.mickelson@golf.com",
+    password: "lefty456",
+    role: "student"
+  },
+  {
+    email: "rory.mcilroy@golf.com",
+    password: "rory789",
+    role: "student"
+  },
+
+  // Instructors (Baseball players)
+  {
     email: "babe.ruth@mlb.com",
     password: "ruth456",
     role: "instructor"
   },
   {
+    email: "ken.griffey@mlb.com",
+    password: "swingman1",
+    role: "instructor"
+  },
+  {
+    email: "mike.trout@mlb.com",
+    password: "troutpower",
+    role: "instructor"
+  },
+
+  // Admins (Mix of baseball/golf legends)
+  {
     email: "shohei.ohtani@mlb.com",
     password: "ohtani789",
     role: "admin"
+  },
+  {
+    email: "jack.nicklaus@golf.com",
+    password: "goldenbear",
+    role: "admin"
+  },
+  {
+    email: "hank.aaron@mlb.com",
+    password: "755homeruns",
+    role: "admin"
   }
 ];
+
 
 const defaultPermissions = {
   student: { courses: ["read"] },
