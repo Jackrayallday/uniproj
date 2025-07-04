@@ -1,202 +1,163 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Admin Dashboard</title>
-  <script defer>
-    document.addEventListener('DOMContentLoaded', () => {
-      // Tab switching
-      const tabs = document.querySelectorAll('.tab-button');
-      const sections = document.querySelectorAll('.tab-section');
+document.addEventListener('DOMContentLoaded', () => {
+  // Tab switching
+  const tabs = document.querySelectorAll('.tab-button');
+  const sections = document.querySelectorAll('.tab-section');
 
-      tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-          const target = tab.dataset.target;
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const target = tab.dataset.target;
 
-          sections.forEach(section => {
-            section.style.display = section.id === target ? 'block' : 'none';
-          });
-        });
+      sections.forEach(section => {
+        section.style.display = section.id === target ? 'block' : 'none';
       });
-      // Show dashboard by default
-      document.getElementById('dashboard').style.display = 'block';
+    });
+  });
 
-      const courseList = document.getElementById('course-list');
-      const addCourseForm = document.getElementById('add-course-form');
-      const enrollForm = document.getElementById('enroll-form');
-      const addStatus = document.getElementById('add-course-status');
-      const enrollStatus = document.getElementById('enroll-status');
+  // Show dashboard tab by default
+  document.getElementById('dashboard').style.display = 'block';
 
-      function loadCourses() {
-        fetch('/courses')
-          .then(res => res.json())
-          .then(data => {
-            console.log("Loaded courses:", data);
-            if (!data.success || !Array.isArray(data.courses)) {
-              courseList.textContent = "Failed to load courses.";
-              return;
-            }
+  const courseListDiv = document.getElementById('course-list');
+  const addCourseForm = document.getElementById('add-course-form');
+  const enrollForm = document.getElementById('enroll-form');
+  const addStatus = document.getElementById('add-course-status');
+  const enrollStatus = document.getElementById('enroll-status');
 
-            const courses = data.courses;
-            if (courses.length === 0) {
-              courseList.textContent = "No courses found.";
-              return;
-            }
-
-            const ul = document.createElement('ul');
-            courses.forEach(course => {
-              const li = document.createElement('li');
-              li.innerHTML = `<strong>${course.course}</strong><br/>
-                Instructor: ${course.instructor}<br/>
-                Students: ${
-                  course.students.length > 0
-                    ? `<ul>` + course.students.map(email => `
-                        <li>
-                          ${email}
-                          <button onclick="removeStudent('${course.course}', '${email}')">Remove</button>
-                        </li>
-                      `).join('') + `</ul>`
-                    : 'None'
-                }`;
-              ul.appendChild(li);
-            });
-            courseList.innerHTML = '';
-            courseList.appendChild(ul);
-          })
-          .catch(err => {
-            console.error('Error loading courses:', err);
-            courseList.textContent = 'Failed to load courses.';
-          });
-      }
-
-      // Make removeStudent global
-      window.removeStudent = function(course, studentEmail) {
-        if (!confirm(`Remove ${studentEmail} from ${course}?`)) return;
-
-        fetch('/courses/remove-student', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ course, studentEmail })
-        })
-        .then(res => res.json())
-        .then(data => {
-          alert(data.message);
-          if (data.success) loadCourses();
-        })
-        .catch(err => {
-          console.error("Error removing student:", err);
-          alert("Error removing student.");
-        });
-      };
-
-      addCourseForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const course = document.getElementById('course-name').value.trim();
-        const instructor = document.getElementById('instructor-email').value.trim();
-
-        if (!course || !instructor) {
-          addStatus.textContent = "Both fields are required.";
+  // Load and display courses
+  function loadCourses() {
+    fetch('/courses')
+      .then(async res => {
+        const text = await res.text();
+        console.log("Raw response text from /courses:", text);
+        try {
+          return JSON.parse(text);
+        } catch (err) {
+          console.error("Failed to parse JSON:", err);
+          throw new Error("Bad JSON format from server");
+        }
+      })
+      .then(data => {
+        console.log("Parsed courses data:", data);
+        if (!data.success) {
+          courseListDiv.textContent = "Failed to load courses.";
           return;
         }
 
-        const res = await fetch('/courses/add', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ course, instructor })
-        });
+        const courses = data.courses;
+        if (courses.length === 0) {
+          courseListDiv.textContent = "No courses available.";
+          return;
+        }
 
-        const data = await res.json();
+        const list = document.createElement('ul');
+        courses.forEach(course => {
+          const item = document.createElement('li');
+          item.innerHTML = `<strong>${course.course}</strong><br/>
+            Instructor: ${course.instructor}<br/>
+            Students: ${
+              course.students.length > 0
+                ? `<ul>` + course.students.map(email => `
+                    <li>
+                      ${email}
+                      <button onclick="removeStudent('${course.course}', '${email}')">Remove</button>
+                    </li>
+                  `).join('') + `</ul>`
+                : 'None'
+            }`;
+          list.appendChild(item);
+        });
+        courseListDiv.innerHTML = '';
+        courseListDiv.appendChild(list);
+      })
+      .catch(err => {
+        console.error("Error fetching courses:", err);
+        courseListDiv.textContent = "Error loading courses.";
+      });
+  }
+
+  // Remove student from course
+  window.removeStudent = function(course, studentEmail) {
+    if (!confirm(`Are you sure you want to remove ${studentEmail} from ${course}?`)) return;
+
+    fetch('/courses/remove-student', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ course, studentEmail })
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (!data.success) {
+          alert(data.message || "Failed to remove student.");
+          return;
+        }
+        alert(data.message);
+        loadCourses();
+      })
+      .catch(err => {
+        console.error("Error removing student:", err);
+        alert("Error removing student.");
+      });
+  };
+
+  // Handle add course form
+  addCourseForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const course = document.getElementById('course-name').value.trim();
+    const instructor = document.getElementById('instructor-email').value.trim();
+
+    if (!course || !instructor) {
+      addStatus.textContent = "Both fields are required.";
+      return;
+    }
+
+    fetch('/courses/add', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ course, instructor })
+    })
+      .then(res => res.json())
+      .then(data => {
         addStatus.textContent = data.message || "Unexpected response.";
         if (data.success) {
           loadCourses();
           addCourseForm.reset();
         }
+      })
+      .catch(err => {
+        console.error("Error adding course:", err);
+        addStatus.textContent = "Error adding course.";
       });
+  });
 
-      enrollForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const course = document.getElementById('enroll-course-name').value.trim();
-        const studentEmail = document.getElementById('student-email').value.trim();
+  // Handle enroll form
+  enrollForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const course = document.getElementById('enroll-course-name').value.trim();
+    const studentEmail = document.getElementById('student-email').value.trim();
 
-        if (!course || !studentEmail) {
-          enrollStatus.textContent = "Both fields are required.";
-          return;
-        }
+    if (!course || !studentEmail) {
+      enrollStatus.textContent = "Both fields are required.";
+      return;
+    }
 
-        const res = await fetch('/courses/enroll', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ course, studentEmail })
-        });
-
-        const data = await res.json();
+    fetch('/courses/enroll', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ course, studentEmail })
+    })
+      .then(res => res.json())
+      .then(data => {
         enrollStatus.textContent = data.message || "Unexpected response.";
         if (data.success) {
           loadCourses();
           enrollForm.reset();
         }
+      })
+      .catch(err => {
+        console.error("Error enrolling student:", err);
+        enrollStatus.textContent = "Error enrolling student.";
       });
+  });
 
-      // Load courses on page load
-      loadCourses();
-    });
-  </script>
-</head>
-<body>
-  <h1>Welcome, Admin!</h1>
-
-  <nav>
-    <button class="tab-button" data-target="dashboard">Dashboard</button>
-    <button class="tab-button" data-target="manage-courses">Manage Courses</button>
-    <button class="tab-button" data-target="manage-users">Manage Users</button>
-  </nav>
-
-  <hr />
-
-  <!-- Dashboard Tab -->
-  <section id="dashboard" class="tab-section" style="display: none;">
-    <h2>Dashboard</h2>
-    <p>Quick overview or admin tools can go here.</p>
-  </section>
-
-  <!-- Manage Courses Tab -->
-  <section id="manage-courses" class="tab-section" style="display: none;">
-    <h2>Existing Courses</h2>
-    <div id="course-list">Loading courses...</div>
-
-    <hr />
-
-    <h2>Add New Course</h2>
-    <form id="add-course-form">
-      <label for="course-name">Course Name:</label>
-      <input type="text" id="course-name" required />
-      <br />
-      <label for="instructor-email">Instructor Email:</label>
-      <input type="email" id="instructor-email" required />
-      <br />
-      <button type="submit">Add Course</button>
-    </form>
-    <div id="add-course-status"></div>
-
-    <hr />
-
-    <h2>Enroll Student</h2>
-    <form id="enroll-form">
-      <label for="enroll-course-name">Course Name:</label>
-      <input type="text" id="enroll-course-name" required />
-      <br />
-      <label for="student-email">Student Email:</label>
-      <input type="email" id="student-email" required />
-      <br />
-      <button type="submit">Enroll Student</button>
-    </form>
-    <div id="enroll-status"></div>
-  </section>
-
-  // Manage Users Tab (future use)
-  <section id="manage-users" class="tab-section" style="display: none;">
-    <h2>User Management</h2>
-    <p>Feature coming soon.</p>
-  </section>
-</body>
-</html>
+  // Initial load
+  loadCourses();
+});
