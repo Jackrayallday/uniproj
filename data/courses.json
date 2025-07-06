@@ -3,26 +3,75 @@
     "course": "Intro to Homeruns",
     "instructor": "babe.ruth@mlb.com",
     "students": [
-      "tiger.woods@golf.com"
+      "tiger.woods@golf.com",
+      "jeffreychristensen@lawson-ramirez.com",
+      "vancechristina@martinez.com"
     ]
   },
   {
     "course": "Walking the bases",
     "instructor": "babe.ruth@mlb.com",
     "students": [
+      "vancechristina@martinez.com",
+      "jeffreychristensen@lawson-ramirez.com",
       "tiger.woods@golf.com"
     ]
   },
   {
     "course": "Swing Mechanics",
-    "instructor": "babe.ruth@mlb.com",
+    "instructor": "ken.griffey@mlb.com",
     "students": [
+      "phil.mickelson@golf.com",
+      "tiger.woods@golf.com"
+    ]
+  },
+  {
+    "course": "testing3",
+    "instructor": "ken.griffey@mlb.com",
+    "students": []
+  },
+  {
+    "course": "Street Different 0",
+    "instructor": "timothyrobinson@guzman-murray.com",
+    "students": [
+      "vancechristina@martinez.com",
+      "jeffreychristensen@lawson-ramirez.com",
+      "tiger.woods@golf.com"
+    ]
+  },
+  {
+    "course": "Anyone Team 1",
+    "instructor": "timothyrobinson@guzman-murray.com",
+    "students": [
+      "vazquezrobert@jacobson.com",
+      "jeffreychristensen@lawson-ramirez.com",
+      "tiger.woods@golf.com"
+    ]
+  },
+  {
+    "course": "Response Or 2",
+    "instructor": "timothyrobinson@guzman-murray.com",
+    "students": [
+      "tiger.woods@golf.com",
+      "jeffreychristensen@lawson-ramirez.com",
+      "rory.mcilroy@golf.com"
+    ]
+  },
+  {
+    "course": "Table Whether 3",
+    "instructor": "kenneth59@gmail.com",
+    "students": [
+      "rory.mcilroy@golf.com",
+      "tiger.woods@golf.com",
       "phil.mickelson@golf.com"
     ]
   },
   {
-    "course": "testing",
+    "course": "Message Similar 4",
     "instructor": "ken.griffey@mlb.com",
-    "students": []
+    "students": [
+      "phil.mickelson@golf.com",
+      "vancechristina@martinez.com"
+    ]
   }
 ]

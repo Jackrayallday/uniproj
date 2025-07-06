@@ -1,8 +1,25 @@
 <!DOCTYPE html>
 <html>
-<head><title>Instructor Dashboard</title></head>
+<head>
+  <title>Instructor Dashboard</title>
+</head>
 <body>
   <h1>Welcome, Instructor!</h1>
-  <p>This is your dashboard.</p>
+  <button id="logoutBtn">Log Out</button>
+  <div id="coursesSection">
+    <h2>Your Courses</h2>
+    <ul id="courseList"></ul>
+  </div>
+
+  <div id="assignmentsSection" style="display:none;">
+    <h2>Assignments for <span id="selectedCourse"></span></h2>
+    <ul id="assignmentList"></ul>
+
+    <h3>Create New Assignment</h3>
+    <input type="text" id="newAssignmentName" placeholder="Assignment Name" />
+    <button onclick="createAssignment()">Create</button>
+  </div>
+
+  <script src="/js/instructor.js"></script>
 </body>
 </html>

@@ -188,6 +188,11 @@ app.get('/instructor.html', requireLogin, requireRole('instructor'), (req, res) 
 app.get('/admin.html', requireLogin, requireRole('admin'), (req, res) => {
   res.sendFile(path.join(__dirname, 'protected_pages', 'admin.html'));
 });
+
+app.get('/grade-entry.html', requireLogin, requireRole('instructor'), (req, res) => {
+  res.sendFile(path.join(__dirname, 'protected_pages', 'grade-entry.html'));
+});
+
 // Route: User Registration
 app.post('/register', (req, res) => {
   const { email, password, role } = req.body;
@@ -253,6 +258,8 @@ app.post('/register', (req, res) => {
 
 // Admin: Course management
 const coursesPath = path.join(__dirname, 'data', 'courses.json');
+const gradesPath = path.join(__dirname, 'data', 'grades.json');
+
 
 app.get('/courses', requireLogin, requirePermission('courses', 'read'), (req, res) => {
   console.log("GET /courses hit by:", req.session.email, "with role:", req.session.role);
@@ -281,6 +288,86 @@ app.get('/courses', requireLogin, requirePermission('courses', 'read'), (req, re
     res.status(500).json({ success: false, message: "Failed to load courses." });
   }
 });
+// Route: Get grades for a student
+app.get('/grades', requireLogin, requireRole('student'), (req, res) => {
+  const studentEmail = req.session.email;
+
+  try {
+    if (!fs.existsSync(gradesPath)) {
+      return res.json({ success: true, grades: [] });
+    }
+
+    const grades = JSON.parse(fs.readFileSync(gradesPath, 'utf8'));
+    const studentGrades = grades
+      .filter(g => g.student === studentEmail)
+      .map(g => ({ course: g.course, grade: g.grade }));
+
+    res.json({ success: true, grades: studentGrades });
+  } catch (err) {
+    console.error("Error fetching grades:", err);
+    res.status(500).json({ success: false, message: "Failed to fetch grades." });
+  }
+});
+
+const assignmentsPath = path.join(__dirname, 'data', 'assignments.json');
+
+app.get('/assignments', requireLogin, requireRole('instructor'), (req, res) => {
+  const instructor = req.session.email;
+  const course = req.query.course;
+
+  try {
+    const courses = JSON.parse(fs.readFileSync(coursesPath, 'utf8'));
+    const assignments = fs.existsSync(assignmentsPath)
+      ? JSON.parse(fs.readFileSync(assignmentsPath, 'utf8'))
+      : [];
+
+    const courseObj = courses.find(c => c.course === course && c.instructor === instructor);
+    if (!courseObj) {
+      return res.status(403).json({ success: false, message: "You do not teach this course." });
+    }
+
+    const courseAssignments = assignments.filter(a => a.course === course);
+    res.json({ success: true, assignments: courseAssignments });
+  } catch (err) {
+    console.error("Error reading assignments:", err);
+    res.status(500).json({ success: false, message: "Failed to load assignments." });
+  }
+});
+
+app.get('/assignments', (req, res) => {
+  const { course, instructor } = req.query;
+  fs.readFile('assignments.json', 'utf8', (err, data) => {
+    if (err) return res.status(500).json({ error: 'Failed to read assignments file' });
+    const all = JSON.parse(data);
+    const assignments = all.filter(a => a.course === course && a.instructor === instructor);
+    res.json({ assignments });
+  });
+});
+
+// View grades for logged-in student
+app.get('/grades/view', requireLogin, requireRole('student'), (req, res) => {
+  const studentEmail = req.session.email;
+
+  // Read grades from file
+  fs.readFile(gradesPath, 'utf8', (err, data) => {
+    if (err) {
+      console.error('Error reading grades file:', err);
+      return res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+
+    let grades = [];
+    try {
+      grades = JSON.parse(data);
+    } catch (parseErr) {
+      console.error('Failed to parse grades file:', parseErr);
+      return res.status(500).json({ success: false, message: 'Data format error' });
+    }
+
+    const studentGrades = grades.filter(entry => entry.student === studentEmail);
+    res.json({ success: true, grades: studentGrades });
+  });
+});
+
 
 app.post('/courses/add', requireLogin, requireRole('admin'), (req, res) => {
   const { course, instructor } = req.body;
@@ -434,6 +521,174 @@ app.post('/acl/update', requireLogin, requireRole('admin'), (req, res) => {
     return res.status(500).json({ success: false, message: "Could not update ACL." });
   }
 });
+
+// Route: Assign grades to students
+app.post('/grades/assign', requireLogin, requireRole('instructor'), (req, res) => {
+  const { course, student, assignment, grade } = req.body;
+  const instructorEmail = req.session.email;
+
+  if (!course || !student || !assignment || !grade) {
+    return res.status(400).json({ success: false, message: "All fields are required." });
+  }
+
+  try {
+    const courses = JSON.parse(fs.readFileSync(coursesPath, 'utf8'));
+    const courseObj = courses.find(c => c.course === course && c.instructor === instructorEmail);
+    if (!courseObj) {
+      return res.status(403).json({ success: false, message: "You do not teach this course." });
+    }
+
+    if (!courseObj.students.includes(student)) {
+      return res.status(400).json({ success: false, message: "Student not enrolled in this course." });
+    }
+
+    let grades = [];
+    if (fs.existsSync(gradesPath)) {
+      grades = JSON.parse(fs.readFileSync(gradesPath, 'utf8'));
+    }
+
+    const existing = grades.find(g => g.course === course && g.student === student && g.assignment === assignment);
+    if (existing) {
+      existing.grade = grade;
+    } else {
+      grades.push({ course, student, assignment, grade });
+    }
+
+    fs.writeFileSync(gradesPath, JSON.stringify(grades, null, 2));
+    res.json({ success: true, message: "Grade assigned." });
+  } catch (err) {
+    console.error("Error assigning grade:", err);
+    res.status(500).json({ success: false, message: "Failed to assign grade." });
+  }
+});
+
+app.post('/assignments/create', requireLogin, requireRole('instructor'), (req, res) => {
+  const { course, assignment } = req.body;
+  const instructor = req.session.email;
+
+  if (!course || !assignment) {
+    return res.status(400).json({ success: false, message: "Course and assignment are required." });
+  }
+
+  try {
+    const courses = JSON.parse(fs.readFileSync(coursesPath, 'utf8'));
+    const courseObj = courses.find(c => c.course === course && c.instructor === instructor);
+
+    if (!courseObj) {
+      return res.status(403).json({ success: false, message: "You do not teach this course." });
+    }
+
+    const assignments = fs.existsSync(assignmentsPath)
+      ? JSON.parse(fs.readFileSync(assignmentsPath, 'utf8'))
+      : [];
+
+    if (assignments.find(a => a.course === course && a.assignment === assignment)) {
+      return res.status(409).json({ success: false, message: "Assignment already exists." });
+    }
+
+    assignments.push({ course, assignment });
+    fs.writeFileSync(assignmentsPath, JSON.stringify(assignments, null, 2));
+
+    res.json({ success: true, message: "Assignment created." });
+  } catch (err) {
+    console.error("Error creating assignment:", err);
+    res.status(500).json({ success: false, message: "Failed to create assignment." });
+  }
+});
+
+app.post('/assignments', (req, res) => {
+  const { course, instructor, title } = req.body;
+  const newAssignment = { course, instructor, title };
+
+  fs.readFile('assignments.json', 'utf8', (err, data) => {
+    const assignments = err ? [] : JSON.parse(data);
+    assignments.push(newAssignment);
+    fs.writeFile('assignments.json', JSON.stringify(assignments, null, 2), err => {
+      if (err) return res.status(500).json({ error: 'Failed to write assignment' });
+      res.json({ message: 'Assignment added successfully' });
+    });
+  });
+});
+app.post('/courses/change-instructor', (req, res) => {
+  const { course, instructor } = req.body;
+
+  const usersPath = path.join(__dirname, 'data', 'users.json');
+  const coursesPath = path.join(__dirname, 'data', 'courses.json');
+
+  fs.readFile(usersPath, 'utf8', (err, userData) => {
+    if (err) return res.status(500).json({ success: false, message: 'Failed to read users file' });
+
+    let users = JSON.parse(userData);
+    const validInstructor = users.find(user => user.email === instructor && user.role === 'instructor');
+    if (!validInstructor) {
+      return res.status(400).json({ success: false, message: 'Instructor not found or role is not instructor' });
+    }
+
+    fs.readFile(coursesPath, 'utf8', (err, courseData) => {
+      if (err) return res.status(500).json({ success: false, message: 'Error reading courses file' });
+
+      let courses = JSON.parse(courseData);
+      const index = courses.findIndex(c => c.course === course);
+      if (index === -1) return res.status(404).json({ success: false, message: 'Course not found' });
+
+      courses[index].instructor = instructor;
+
+      fs.writeFile(coursesPath, JSON.stringify(courses, null, 2), (err) => {
+        if (err) return res.status(500).json({ success: false, message: 'Error saving course' });
+        res.json({ success: true, message: 'Instructor updated' });
+      });
+    });
+  });
+});
+
+app.post('/courses/delete', (req, res) => {
+  const { course } = req.body;
+  const coursesPath = path.join(__dirname, 'data', 'courses.json');
+
+  fs.readFile(coursesPath, 'utf8', (err, data) => {
+    if (err) return res.status(500).json({ success: false, message: 'Error reading courses file' });
+
+    let courses = JSON.parse(data);
+    const updated = courses.filter(c => c.course !== course);
+
+    if (updated.length === courses.length)
+      return res.status(404).json({ success: false, message: 'Course not found' });
+
+    fs.writeFile(coursesPath, JSON.stringify(updated, null, 2), (err) => {
+      if (err) return res.status(500).json({ success: false, message: 'Error deleting course' });
+      res.json({ success: true, message: 'Course deleted successfully' });
+    });
+  });
+});
+
+app.post('/assignments/remove', requireLogin, requireRole('instructor'), (req, res) => {
+  const { course, assignment } = req.body;
+  const assignmentsPath = path.join(__dirname, 'data', 'assignments.json');
+
+  try {
+    const data = JSON.parse(fs.readFileSync(assignmentsPath, 'utf8'));
+
+    // Check if the assignment exists for that course
+    const assignmentExists = data.some(a => a.course === course && a.assignment === assignment);
+    if (!assignmentExists) {
+      return res.status(400).json({ success: false, message: "Course or assignment not found." });
+    }
+
+    // Remove matching assignment
+    const updated = data.filter(a => !(a.course === course && a.assignment === assignment));
+
+    fs.writeFileSync(assignmentsPath, JSON.stringify(updated, null, 2));
+    return res.json({ success: true, message: "Assignment removed." });
+  } catch (err) {
+    console.error("Error removing assignment:", err);
+    return res.status(500).json({ success: false, message: "Server error." });
+  }
+});
+
+
+
+const gradeRoutes = require('./grades');
+app.use('/grades', gradeRoutes);
 
 
 // Start HTTPS server
