@@ -1,24 +1,23 @@
 document.addEventListener('DOMContentLoaded', () => {
   fetchCourses();
   document.getElementById('logoutBtn').addEventListener('click', () => {
-  fetch('/logout', {
-    method: 'POST',
-    credentials: 'include'
-  })
-  .then(res => res.json())
-  .then(data => {
-    if (data.success) {
-      alert('Logged out successfully!');
-      window.location.href = '/'; // Redirect to home or login page
-    } else {
-      alert('Logout failed: ' + data.message);
-    }
-  })
-  .catch(err => {
-    console.error('Logout error:', err);
+    fetch('/logout', {
+      method: 'POST',
+      credentials: 'include'
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        alert('Logged out successfully!');
+        window.location.href = '/';
+      } else {
+        alert('Logout failed: ' + data.message);
+      }
+    })
+    .catch(err => {
+      console.error('Logout error:', err);
+    });
   });
-});
-
 });
 
 let selectedCourse = null;
@@ -29,6 +28,7 @@ function fetchCourses() {
     .then(data => {
       if (data.success) {
         const courseList = document.getElementById('courseList');
+        courseList.innerHTML = ''; // Clear previous list
         data.courses.forEach(course => {
           const li = document.createElement('li');
           li.textContent = course.course;
@@ -52,11 +52,22 @@ function selectCourse(courseName) {
       if (data.success) {
         data.assignments.forEach(a => {
           const li = document.createElement('li');
-          li.textContent = a.assignment;
-          li.onclick = () => {
-            // Later: navigate to grade entry page
+
+          const link = document.createElement('span');
+          link.textContent = a.assignment;
+          link.style.cursor = 'pointer';
+          link.style.textDecoration = 'underline';
+          link.onclick = () => {
             window.location.href = `/grade-entry.html?course=${encodeURIComponent(courseName)}&assignment=${encodeURIComponent(a.assignment)}`;
           };
+
+          const removeBtn = document.createElement('button');
+          removeBtn.textContent = 'Remove';
+          removeBtn.style.marginLeft = '10px';
+          removeBtn.onclick = () => removeAssignment(courseName, a.assignment);
+
+          li.appendChild(link);
+          li.appendChild(removeBtn);
           assignmentList.appendChild(li);
         });
       }
@@ -85,3 +96,22 @@ function createAssignment() {
     .catch(err => console.error('Error creating assignment:', err));
 }
 
+function removeAssignment(course, assignment) {
+  if (!confirm(`Are you sure you want to remove assignment: ${assignment}?`)) return;
+
+  console.log('Removing assignment:', { course, assignment });
+  fetch('/assignments/remove', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ course: course.trim(), assignment: assignment.trim() })
+  })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        selectCourse(course); // Refresh list
+      } else {
+        alert(data.message);
+      }
+    })
+    .catch(err => console.error('Error removing assignment:', err));
+}

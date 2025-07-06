@@ -661,6 +661,31 @@ app.post('/courses/delete', (req, res) => {
   });
 });
 
+app.post('/assignments/remove', requireLogin, requireRole('instructor'), (req, res) => {
+  const { course, assignment } = req.body;
+  const assignmentsPath = path.join(__dirname, 'data', 'assignments.json');
+
+  try {
+    const data = JSON.parse(fs.readFileSync(assignmentsPath, 'utf8'));
+
+    // Check if the assignment exists for that course
+    const assignmentExists = data.some(a => a.course === course && a.assignment === assignment);
+    if (!assignmentExists) {
+      return res.status(400).json({ success: false, message: "Course or assignment not found." });
+    }
+
+    // Remove matching assignment
+    const updated = data.filter(a => !(a.course === course && a.assignment === assignment));
+
+    fs.writeFileSync(assignmentsPath, JSON.stringify(updated, null, 2));
+    return res.json({ success: true, message: "Assignment removed." });
+  } catch (err) {
+    console.error("Error removing assignment:", err);
+    return res.status(500).json({ success: false, message: "Server error." });
+  }
+});
+
+
 
 const gradeRoutes = require('./grades');
 app.use('/grades', gradeRoutes);
