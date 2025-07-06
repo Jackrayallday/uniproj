@@ -368,6 +368,48 @@ app.get('/grades/view', requireLogin, requireRole('student'), (req, res) => {
   });
 });
 
+app.get('/materials/:courseId', (req, res) => {
+  try {
+    const courseId = req.params.courseId;
+    const userEmail = req.session.email;
+    const role = req.session.role;
+    console.log('Incoming courseId for materials:', courseId);
+
+    if (!userEmail) {
+      return res.status(401).json({ error: 'Not logged in' });
+    }
+
+    // Load ACL as an object
+    const acl = JSON.parse(fs.readFileSync(path.join(__dirname, 'data', 'acl.json')));
+    const courses = JSON.parse(fs.readFileSync(path.join(__dirname, 'data', 'courses.json')));
+    const materials = JSON.parse(fs.readFileSync(materialsFile));
+
+    console.log('All available material courseIds:', materials.map(m => m.courseId));
+
+    const isInstructorForCourse = courses.some(
+      (course) => course.courseId === courseId && course.instructor === userEmail
+    );
+
+    const isAdmin = role === 'admin';
+
+    // Check if the user has read access in the ACL
+    const aclEntry = acl[userEmail];
+    const hasStudentAccess = aclEntry && aclEntry.courses.includes('read');
+
+    if (isInstructorForCourse || isAdmin || hasStudentAccess) {
+      const courseMaterials = materials.filter(
+        (m) => m.courseId.trim().toLowerCase() === courseId.trim().toLowerCase()
+      );
+      return res.json(courseMaterials);
+    }
+
+    res.status(403).json({ error: 'Access denied to course materials' });
+  } catch (err) {
+    console.error('Error in /materials/:courseId route:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 
 app.post('/courses/add', requireLogin, requireRole('admin'), (req, res) => {
   const { course, instructor } = req.body;
@@ -685,6 +727,36 @@ app.post('/assignments/remove', requireLogin, requireRole('instructor'), (req, r
   }
 });
 
+const materialsFile = path.join(__dirname, 'data', 'materials.json');
+
+// POST /materials/add - Instructors can post new material
+app.post('/materials/add', (req, res) => {
+  const { courseId, title, link } = req.body;
+console.log('Writing to path:', materialsFile);
+
+  if (!req.session.email || req.session.role !== 'instructor') {
+    return res.status(403).json({ error: 'Unauthorized' });
+  }
+
+  // Read existing materials
+  let materials = [];
+  if (fs.existsSync(materialsFile)) {
+    materials = JSON.parse(fs.readFileSync(materialsFile));
+  }
+
+  const newMaterial = {
+    id: materials.length + 1,
+    courseId,
+    title,
+    link,
+    instructorEmail: req.session.email
+  };
+
+  materials.push(newMaterial);
+  fs.writeFileSync(materialsFile, JSON.stringify(materials, null, 2));
+
+  res.status(200).json({ message: 'Material added successfully' });
+});
 
 
 const gradeRoutes = require('./grades');

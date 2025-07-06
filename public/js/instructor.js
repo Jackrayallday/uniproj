@@ -115,3 +115,45 @@ function removeAssignment(course, assignment) {
     })
     .catch(err => console.error('Error removing assignment:', err));
 }
+
+function postMaterial() {
+  const title = document.getElementById('materialTitle').value.trim();
+  const link = document.getElementById('materialLink').value.trim();
+  const status = document.getElementById('materialStatus');
+
+  if (!selectedCourse) {
+    status.textContent = "Please select a course first.";
+    return;
+  }
+
+  if (!title || !link) {
+    status.textContent = "Both title and link are required.";
+    return;
+  }
+
+  fetch('/materials/add', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({
+      courseId: selectedCourse,
+      title: title,
+      link: link
+    })
+  })
+    .then(res => res.json())
+    .then(data => {
+      if (data.message) {
+        status.textContent = "Material posted successfully.";
+        document.getElementById('materialTitle').value = '';
+        document.getElementById('materialLink').value = '';
+      } else {
+        status.textContent = data.error || "Failed to post material.";
+      }
+    })
+    .catch(err => {
+      console.error('Error posting material:', err);
+      status.textContent = "An error occurred.";
+    });
+}
+

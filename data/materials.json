@@ -1,0 +1,30 @@
+[
+  {
+    "id": 1,
+    "courseId": "Intro to Homeruns",
+    "title": "My homerun",
+    "link": "https://www.youtube.com/shorts/xhD8WJDEixQ",
+    "instructorEmail": "babe.ruth@mlb.com"
+  },
+  {
+    "id": 2,
+    "courseId": "Intro to Homeruns",
+    "title": "Swing Comparison",
+    "link": "https://www.youtube.com/watch?v=21FQUxM03zg",
+    "instructorEmail": "babe.ruth@mlb.com"
+  },
+  {
+    "id": 3,
+    "courseId": "Walking the Bases",
+    "title": "Me walking the bases",
+    "link": "https://www.youtube.com/watch?v=EHxDMfWd1vs",
+    "instructorEmail": "babe.ruth@mlb.com"
+  },
+  {
+    "id": 4,
+    "courseId": "Walking the Bases",
+    "title": "Interview",
+    "link": "https://www.youtube.com/watch?v=Io8AIKD9dLk",
+    "instructorEmail": "babe.ruth@mlb.com"
+  }
+]

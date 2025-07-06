@@ -13,8 +13,8 @@
     "instructor": "babe.ruth@mlb.com",
     "students": [
       "vancechristina@martinez.com",
-      "jeffreychristensen@lawson-ramirez.com",
-      "tiger.woods@golf.com"
+      "tiger.woods@golf.com",
+      "rory.mcilroy@golf.com"
     ]
   },
   {
@@ -72,5 +72,10 @@
     "students": [
       "phil.mickelson@golf.com"
     ]
+  },
+  {
+    "course": "Hitting 300",
+    "instructor": "ken.griffey@mlb.com",
+    "students": []
   }
 ]
