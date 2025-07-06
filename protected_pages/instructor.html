@@ -6,6 +6,7 @@
 <body>
   <h1>Welcome, Instructor!</h1>
   <button id="logoutBtn">Log Out</button>
+
   <div id="coursesSection">
     <h2>Your Courses</h2>
     <ul id="courseList"></ul>
@@ -18,6 +19,12 @@
     <h3>Create New Assignment</h3>
     <input type="text" id="newAssignmentName" placeholder="Assignment Name" />
     <button onclick="createAssignment()">Create</button>
+
+    <h3 style="margin-top:30px;">Post Course Material</h3>
+    <input type="text" id="materialTitle" placeholder="Material Title" />
+    <input type="text" id="materialLink" placeholder="Material Link (URL)" />
+    <button onclick="postMaterial()">Post Material</button>
+    <p id="materialStatus"></p>
   </div>
 
   <script src="/js/instructor.js"></script>
