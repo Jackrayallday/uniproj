@@ -1,5 +1,24 @@
 document.addEventListener('DOMContentLoaded', () => {
   fetchCourses();
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+  fetch('/logout', {
+    method: 'POST',
+    credentials: 'include'
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      alert('Logged out successfully!');
+      window.location.href = '/'; // Redirect to home or login page
+    } else {
+      alert('Logout failed: ' + data.message);
+    }
+  })
+  .catch(err => {
+    console.error('Logout error:', err);
+  });
+});
+
 });
 
 let selectedCourse = null;
@@ -65,3 +84,4 @@ function createAssignment() {
     })
     .catch(err => console.error('Error creating assignment:', err));
 }
+

@@ -15,14 +15,14 @@
   },
   {
     "course": "Swing Mechanics",
-    "instructor": "babe.ruth@mlb.com",
+    "instructor": "ken.griffey@mlb.com",
     "students": [
       "phil.mickelson@golf.com",
       "tiger.woods@golf.com"
     ]
   },
   {
-    "course": "testing",
+    "course": "testing3",
     "instructor": "ken.griffey@mlb.com",
     "students": []
   }

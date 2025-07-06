@@ -1,5 +1,23 @@
 document.addEventListener('DOMContentLoaded', () => {
   const gradesList = document.getElementById('grades-list');
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+  fetch('/logout', {
+    method: 'POST',
+    credentials: 'include'
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      alert('Logged out successfully!');
+      window.location.href = '/'; // Redirect to home or login page
+    } else {
+      alert('Logout failed: ' + data.message);
+    }
+  })
+  .catch(err => {
+    console.error('Logout error:', err);
+  });
+});
 
   fetch('/grades/view')
     .then(res => res.json())

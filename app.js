@@ -609,6 +609,58 @@ app.post('/assignments', (req, res) => {
     });
   });
 });
+app.post('/courses/change-instructor', (req, res) => {
+  const { course, instructor } = req.body;
+
+  const usersPath = path.join(__dirname, 'data', 'users.json');
+  const coursesPath = path.join(__dirname, 'data', 'courses.json');
+
+  fs.readFile(usersPath, 'utf8', (err, userData) => {
+    if (err) return res.status(500).json({ success: false, message: 'Failed to read users file' });
+
+    let users = JSON.parse(userData);
+    const validInstructor = users.find(user => user.email === instructor && user.role === 'instructor');
+    if (!validInstructor) {
+      return res.status(400).json({ success: false, message: 'Instructor not found or role is not instructor' });
+    }
+
+    fs.readFile(coursesPath, 'utf8', (err, courseData) => {
+      if (err) return res.status(500).json({ success: false, message: 'Error reading courses file' });
+
+      let courses = JSON.parse(courseData);
+      const index = courses.findIndex(c => c.course === course);
+      if (index === -1) return res.status(404).json({ success: false, message: 'Course not found' });
+
+      courses[index].instructor = instructor;
+
+      fs.writeFile(coursesPath, JSON.stringify(courses, null, 2), (err) => {
+        if (err) return res.status(500).json({ success: false, message: 'Error saving course' });
+        res.json({ success: true, message: 'Instructor updated' });
+      });
+    });
+  });
+});
+
+app.post('/courses/delete', (req, res) => {
+  const { course } = req.body;
+  const coursesPath = path.join(__dirname, 'data', 'courses.json');
+
+  fs.readFile(coursesPath, 'utf8', (err, data) => {
+    if (err) return res.status(500).json({ success: false, message: 'Error reading courses file' });
+
+    let courses = JSON.parse(data);
+    const updated = courses.filter(c => c.course !== course);
+
+    if (updated.length === courses.length)
+      return res.status(404).json({ success: false, message: 'Course not found' });
+
+    fs.writeFile(coursesPath, JSON.stringify(updated, null, 2), (err) => {
+      if (err) return res.status(500).json({ success: false, message: 'Error deleting course' });
+      res.json({ success: true, message: 'Course deleted successfully' });
+    });
+  });
+});
+
 
 const gradeRoutes = require('./grades');
 app.use('/grades', gradeRoutes);
