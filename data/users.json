@@ -43,5 +43,55 @@
     "email": "hank.aaron@mlb.com",
     "passwordHash": "$2b$10$jfNrkBSkMZgtyjPSJbr7Z.6BMn8BL1yOHNWgQWABZo353JxnxsH0G",
     "role": "admin"
+  },
+  {
+    "email": "jeffreychristensen@lawson-ramirez.com",
+    "passwordHash": "$2b$10$HiSiND1sBMRc4KABtWMwwTfTzwtQlnkcdV0pVPvZH33Xq8haUfyGf",
+    "role": "student"
+  },
+  {
+    "email": "cheryl16@thompson.org",
+    "passwordHash": "$2b$10$1Y95OsT9KUMe4OHUOIdTl3lLFgwcnpKKDPNucOWHfhz35MecClKug",
+    "role": "student"
+  },
+  {
+    "email": "vazquezrobert@jacobson.com",
+    "passwordHash": "$2b$10$CeKkonYAkkKpPnJO6ZvNihZelqF3n69YENuyagfUP4DTeXesw4ywk",
+    "role": "student"
+  },
+  {
+    "email": "vancechristina@martinez.com",
+    "passwordHash": "$2b$10$UmKclXObijRmTBMzMIXDJ2cYNoByWdTtgfuD23kOqDHy3FJUVVQlv",
+    "role": "student"
+  },
+  {
+    "email": "dgonzalez@morgan-mathews.com",
+    "passwordHash": "$2b$10$nFdc0C43R3ZErD7Q7cLbiSR2rxdr7xi95IoDYFvz4utQDfcnwGxu5",
+    "role": "student"
+  },
+  {
+    "email": "kenneth59@gmail.com",
+    "passwordHash": "$2b$10$pqM1cOz8Db71UQJ4hRLAqM1GAszZLMIxWcIIFke5vPyPYUIlvLOs6",
+    "role": "instructor"
+  },
+  {
+    "email": "jcampbell@gmail.com",
+    "passwordHash": "$2b$10$M0pgIi3nLYJ4bFzocufh6CAVcFYXRGEesghFLepvTwMVR3qtBSN3U",
+    "role": "instructor"
+  },
+  {
+    "email": "timothyrobinson@guzman-murray.com",
+    "passwordHash": "$2b$10$qv7UD0Ll5yysPfQ5EeP3tYDAC5v5Uq2Ep9D7aQmTGQwVmhOe7r6lf",
+    "role": "instructor"
+  },
+  {
+    "email": "benjamindavis@carroll.org",
+    "passwordHash": "$2b$10$HSeMoXhdBAbR5DIMLhy47sMMa17bWPMnMB2gxJIUVMK6w6I9aIyfp",
+    "role": "admin"
+  },
+  {
+    "email": "marcus09@hotmail.com",
+    "passwordHash": "$2b$10$E7k8VQOFGQ1Myj9qCtKWwIBQEfrHgMGSiJk4sp80DlVt2IucyHiWF",
+    "role": "admin"
   }
 ]

@@ -52,5 +52,62 @@
       "write",
       "delete"
     ]
+  },
+  "jeffreychristensen@lawson-ramirez.com": {
+    "courses": [
+      "read"
+    ]
+  },
+  "cheryl16@thompson.org": {
+    "courses": [
+      "read"
+    ]
+  },
+  "vazquezrobert@jacobson.com": {
+    "courses": [
+      "read"
+    ]
+  },
+  "vancechristina@martinez.com": {
+    "courses": [
+      "read"
+    ]
+  },
+  "dgonzalez@morgan-mathews.com": {
+    "courses": [
+      "read"
+    ]
+  },
+  "kenneth59@gmail.com": {
+    "courses": [
+      "read",
+      "write"
+    ]
+  },
+  "jcampbell@gmail.com": {
+    "courses": [
+      "read",
+      "write"
+    ]
+  },
+  "timothyrobinson@guzman-murray.com": {
+    "courses": [
+      "read",
+      "write"
+    ]
+  },
+  "benjamindavis@carroll.org": {
+    "courses": [
+      "read",
+      "write",
+      "delete"
+    ]
+  },
+  "marcus09@hotmail.com": {
+    "courses": [
+      "read",
+      "write",
+      "delete"
+    ]
   }
 }
