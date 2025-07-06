@@ -188,6 +188,11 @@ app.get('/instructor.html', requireLogin, requireRole('instructor'), (req, res) 
 app.get('/admin.html', requireLogin, requireRole('admin'), (req, res) => {
   res.sendFile(path.join(__dirname, 'protected_pages', 'admin.html'));
 });
+
+app.get('/grade-entry.html', requireLogin, requireRole('instructor'), (req, res) => {
+  res.sendFile(path.join(__dirname, 'protected_pages', 'grade-entry.html'));
+});
+
 // Route: User Registration
 app.post('/register', (req, res) => {
   const { email, password, role } = req.body;
@@ -253,6 +258,8 @@ app.post('/register', (req, res) => {
 
 // Admin: Course management
 const coursesPath = path.join(__dirname, 'data', 'courses.json');
+const gradesPath = path.join(__dirname, 'data', 'grades.json');
+
 
 app.get('/courses', requireLogin, requirePermission('courses', 'read'), (req, res) => {
   console.log("GET /courses hit by:", req.session.email, "with role:", req.session.role);
@@ -280,6 +287,61 @@ app.get('/courses', requireLogin, requirePermission('courses', 'read'), (req, re
     console.error("Error reading courses.json:", err);
     res.status(500).json({ success: false, message: "Failed to load courses." });
   }
+});
+// Route: Get grades for a student
+app.get('/grades', requireLogin, requireRole('student'), (req, res) => {
+  const studentEmail = req.session.email;
+
+  try {
+    if (!fs.existsSync(gradesPath)) {
+      return res.json({ success: true, grades: [] });
+    }
+
+    const grades = JSON.parse(fs.readFileSync(gradesPath, 'utf8'));
+    const studentGrades = grades
+      .filter(g => g.student === studentEmail)
+      .map(g => ({ course: g.course, grade: g.grade }));
+
+    res.json({ success: true, grades: studentGrades });
+  } catch (err) {
+    console.error("Error fetching grades:", err);
+    res.status(500).json({ success: false, message: "Failed to fetch grades." });
+  }
+});
+
+const assignmentsPath = path.join(__dirname, 'data', 'assignments.json');
+
+app.get('/assignments', requireLogin, requireRole('instructor'), (req, res) => {
+  const instructor = req.session.email;
+  const course = req.query.course;
+
+  try {
+    const courses = JSON.parse(fs.readFileSync(coursesPath, 'utf8'));
+    const assignments = fs.existsSync(assignmentsPath)
+      ? JSON.parse(fs.readFileSync(assignmentsPath, 'utf8'))
+      : [];
+
+    const courseObj = courses.find(c => c.course === course && c.instructor === instructor);
+    if (!courseObj) {
+      return res.status(403).json({ success: false, message: "You do not teach this course." });
+    }
+
+    const courseAssignments = assignments.filter(a => a.course === course);
+    res.json({ success: true, assignments: courseAssignments });
+  } catch (err) {
+    console.error("Error reading assignments:", err);
+    res.status(500).json({ success: false, message: "Failed to load assignments." });
+  }
+});
+
+app.get('/assignments', (req, res) => {
+  const { course, instructor } = req.query;
+  fs.readFile('assignments.json', 'utf8', (err, data) => {
+    if (err) return res.status(500).json({ error: 'Failed to read assignments file' });
+    const all = JSON.parse(data);
+    const assignments = all.filter(a => a.course === course && a.instructor === instructor);
+    res.json({ assignments });
+  });
 });
 
 app.post('/courses/add', requireLogin, requireRole('admin'), (req, res) => {
@@ -435,6 +497,93 @@ app.post('/acl/update', requireLogin, requireRole('admin'), (req, res) => {
   }
 });
 
+// Route: Assign grades to students
+app.post('/grades/assign', requireLogin, requireRole('instructor'), (req, res) => {
+  const { course, student, assignment, grade } = req.body;
+  const instructorEmail = req.session.email;
+
+  if (!course || !student || !assignment || !grade) {
+    return res.status(400).json({ success: false, message: "All fields are required." });
+  }
+
+  try {
+    const courses = JSON.parse(fs.readFileSync(coursesPath, 'utf8'));
+    const courseObj = courses.find(c => c.course === course && c.instructor === instructorEmail);
+    if (!courseObj) {
+      return res.status(403).json({ success: false, message: "You do not teach this course." });
+    }
+
+    if (!courseObj.students.includes(student)) {
+      return res.status(400).json({ success: false, message: "Student not enrolled in this course." });
+    }
+
+    let grades = [];
+    if (fs.existsSync(gradesPath)) {
+      grades = JSON.parse(fs.readFileSync(gradesPath, 'utf8'));
+    }
+
+    const existing = grades.find(g => g.course === course && g.student === student && g.assignment === assignment);
+    if (existing) {
+      existing.grade = grade;
+    } else {
+      grades.push({ course, student, assignment, grade });
+    }
+
+    fs.writeFileSync(gradesPath, JSON.stringify(grades, null, 2));
+    res.json({ success: true, message: "Grade assigned." });
+  } catch (err) {
+    console.error("Error assigning grade:", err);
+    res.status(500).json({ success: false, message: "Failed to assign grade." });
+  }
+});
+
+app.post('/assignments/create', requireLogin, requireRole('instructor'), (req, res) => {
+  const { course, assignment } = req.body;
+  const instructor = req.session.email;
+
+  if (!course || !assignment) {
+    return res.status(400).json({ success: false, message: "Course and assignment are required." });
+  }
+
+  try {
+    const courses = JSON.parse(fs.readFileSync(coursesPath, 'utf8'));
+    const courseObj = courses.find(c => c.course === course && c.instructor === instructor);
+
+    if (!courseObj) {
+      return res.status(403).json({ success: false, message: "You do not teach this course." });
+    }
+
+    const assignments = fs.existsSync(assignmentsPath)
+      ? JSON.parse(fs.readFileSync(assignmentsPath, 'utf8'))
+      : [];
+
+    if (assignments.find(a => a.course === course && a.assignment === assignment)) {
+      return res.status(409).json({ success: false, message: "Assignment already exists." });
+    }
+
+    assignments.push({ course, assignment });
+    fs.writeFileSync(assignmentsPath, JSON.stringify(assignments, null, 2));
+
+    res.json({ success: true, message: "Assignment created." });
+  } catch (err) {
+    console.error("Error creating assignment:", err);
+    res.status(500).json({ success: false, message: "Failed to create assignment." });
+  }
+});
+
+app.post('/assignments', (req, res) => {
+  const { course, instructor, title } = req.body;
+  const newAssignment = { course, instructor, title };
+
+  fs.readFile('assignments.json', 'utf8', (err, data) => {
+    const assignments = err ? [] : JSON.parse(data);
+    assignments.push(newAssignment);
+    fs.writeFile('assignments.json', JSON.stringify(assignments, null, 2), err => {
+      if (err) return res.status(500).json({ error: 'Failed to write assignment' });
+      res.json({ message: 'Assignment added successfully' });
+    });
+  });
+});
 
 // Start HTTPS server
 https.createServer(sslOptions, app).listen(PORT, () => {
