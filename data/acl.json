@@ -1,11 +1,114 @@
 {
-  "tiger.woods@golf.com": { "courses": ["read"] },
-  "phil.mickelson@golf.com": { "courses": ["read"] },
-  "rory.mcilroy@golf.com": { "courses": ["read"] },
-  "babe.ruth@mlb.com": { "courses": ["read", "write"] },
-  "ken.griffey@mlb.com": { "courses": ["read", "write"] },
-  "mike.trout@mlb.com": { "courses": ["read", "write"] },
-  "shohei.ohtani@mlb.com": { "courses": ["read", "write", "delete"] },
-  "jack.nicklaus@golf.com": { "courses": ["read", "write", "delete"] },
-  "hank.aaron@mlb.com": { "courses": ["read", "write", "delete"] }
+  "tiger.woods@golf.com": {
+    "courses": [
+      "read"
+    ]
+  },
+  "babe.ruth@mlb.com": {
+    "courses": [
+      "read",
+      "write"
+    ]
+  },
+  "shohei.ohtani@mlb.com": {
+    "courses": [
+      "read",
+      "write",
+      "delete"
+    ]
+  },
+  "phil.mickelson@golf.com": {
+    "courses": [
+      "read"
+    ]
+  },
+  "rory.mcilroy@golf.com": {
+    "courses": [
+      "read"
+    ]
+  },
+  "ken.griffey@mlb.com": {
+    "courses": [
+      "read",
+      "write"
+    ]
+  },
+  "mike.trout@mlb.com": {
+    "courses": [
+      "read",
+      "write"
+    ]
+  },
+  "jack.nicklaus@golf.com": {
+    "courses": [
+      "read",
+      "write",
+      "delete"
+    ]
+  },
+  "hank.aaron@mlb.com": {
+    "courses": [
+      "read",
+      "write",
+      "delete"
+    ]
+  },
+  "jeffreychristensen@lawson-ramirez.com": {
+    "courses": [
+      "read"
+    ]
+  },
+  "cheryl16@thompson.org": {
+    "courses": [
+      "read"
+    ]
+  },
+  "vazquezrobert@jacobson.com": {
+    "courses": [
+      "read"
+    ]
+  },
+  "vancechristina@martinez.com": {
+    "courses": [
+      "read"
+    ]
+  },
+  "dgonzalez@morgan-mathews.com": {
+    "courses": [
+      "read"
+    ]
+  },
+  "kenneth59@gmail.com": {
+    "courses": [
+      "read",
+      "write"
+    ]
+  },
+  "jcampbell@gmail.com": {
+    "courses": [
+      "read",
+      "write"
+    ]
+  },
+  "timothyrobinson@guzman-murray.com": {
+    "courses": [
+      "read",
+      "write"
+    ]
+  },
+  "benjamindavis@carroll.org": {
+    "courses": [
+      "read",
+      "write",
+      "delete"
+    ]
+  },
+  "marcus09@hotmail.com": {
+    "courses": [
+      "read",
+      "write",
+      "delete"
+    ]
+  }
 }
+
