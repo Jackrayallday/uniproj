@@ -3,6 +3,234 @@
     "course": "Intro to Homeruns",
     "student": "tiger.woods@golf.com",
     "assignment": "Homework 1",
-    "grade": 99.5
+    "grade": 98.5
+  },
+  {
+    "course": "Street Different 0",
+    "student": "vancechristina@martinez.com",
+    "assignment": "To 1",
+    "grade": 99.3
+  },
+  {
+    "course": "Street Different 0",
+    "student": "jeffreychristensen@lawson-ramirez.com",
+    "assignment": "To 1",
+    "grade": 94.4
+  },
+  {
+    "course": "Street Different 0",
+    "student": "tiger.woods@golf.com",
+    "assignment": "To 1",
+    "grade": 61.1
+  },
+  {
+    "course": "Street Different 0",
+    "student": "vancechristina@martinez.com",
+    "assignment": "Option 2",
+    "grade": 79.7
+  },
+  {
+    "course": "Street Different 0",
+    "student": "jeffreychristensen@lawson-ramirez.com",
+    "assignment": "Option 2",
+    "grade": 69.2
+  },
+  {
+    "course": "Street Different 0",
+    "student": "tiger.woods@golf.com",
+    "assignment": "Option 2",
+    "grade": 86.5
+  },
+  {
+    "course": "Anyone Team 1",
+    "student": "vazquezrobert@jacobson.com",
+    "assignment": "Him 1",
+    "grade": 61.5
+  },
+  {
+    "course": "Anyone Team 1",
+    "student": "jeffreychristensen@lawson-ramirez.com",
+    "assignment": "Him 1",
+    "grade": 76.9
+  },
+  {
+    "course": "Anyone Team 1",
+    "student": "tiger.woods@golf.com",
+    "assignment": "Him 1",
+    "grade": 88.4
+  },
+  {
+    "course": "Anyone Team 1",
+    "student": "vazquezrobert@jacobson.com",
+    "assignment": "Far 2",
+    "grade": 98.8
+  },
+  {
+    "course": "Anyone Team 1",
+    "student": "jeffreychristensen@lawson-ramirez.com",
+    "assignment": "Far 2",
+    "grade": 80
+  },
+  {
+    "course": "Anyone Team 1",
+    "student": "tiger.woods@golf.com",
+    "assignment": "Far 2",
+    "grade": 89.2
+  },
+  {
+    "course": "Response Or 2",
+    "student": "tiger.woods@golf.com",
+    "assignment": "Officer 1",
+    "grade": 68.9
+  },
+  {
+    "course": "Response Or 2",
+    "student": "jeffreychristensen@lawson-ramirez.com",
+    "assignment": "Officer 1",
+    "grade": 74.5
+  },
+  {
+    "course": "Response Or 2",
+    "student": "rory.mcilroy@golf.com",
+    "assignment": "Officer 1",
+    "grade": 98.5
+  },
+  {
+    "course": "Response Or 2",
+    "student": "tiger.woods@golf.com",
+    "assignment": "Without 2",
+    "grade": 60.6
+  },
+  {
+    "course": "Response Or 2",
+    "student": "jeffreychristensen@lawson-ramirez.com",
+    "assignment": "Without 2",
+    "grade": 71.6
+  },
+  {
+    "course": "Response Or 2",
+    "student": "rory.mcilroy@golf.com",
+    "assignment": "Without 2",
+    "grade": 79.5
+  },
+  {
+    "course": "Table Whether 3",
+    "student": "rory.mcilroy@golf.com",
+    "assignment": "So 1",
+    "grade": 90.2
+  },
+  {
+    "course": "Table Whether 3",
+    "student": "tiger.woods@golf.com",
+    "assignment": "So 1",
+    "grade": 79.1
+  },
+  {
+    "course": "Table Whether 3",
+    "student": "phil.mickelson@golf.com",
+    "assignment": "So 1",
+    "grade": 69.3
+  },
+  {
+    "course": "Table Whether 3",
+    "student": "rory.mcilroy@golf.com",
+    "assignment": "Those 2",
+    "grade": 83.1
+  },
+  {
+    "course": "Table Whether 3",
+    "student": "tiger.woods@golf.com",
+    "assignment": "Those 2",
+    "grade": 65.9
+  },
+  {
+    "course": "Table Whether 3",
+    "student": "phil.mickelson@golf.com",
+    "assignment": "Those 2",
+    "grade": 87
+  },
+  {
+    "course": "Message Similar 4",
+    "student": "phil.mickelson@golf.com",
+    "assignment": "Visit 1",
+    "grade": 65.2
+  },
+  {
+    "course": "Message Similar 4",
+    "student": "vancechristina@martinez.com",
+    "assignment": "Visit 1",
+    "grade": 97.2
+  },
+  {
+    "course": "Message Similar 4",
+    "student": "cheryl16@thompson.org",
+    "assignment": "Visit 1",
+    "grade": 73.2
+  },
+  {
+    "course": "Message Similar 4",
+    "student": "phil.mickelson@golf.com",
+    "assignment": "Truth 2",
+    "grade": 85.4
+  },
+  {
+    "course": "Message Similar 4",
+    "student": "vancechristina@martinez.com",
+    "assignment": "Truth 2",
+    "grade": 87.4
+  },
+  {
+    "course": "Message Similar 4",
+    "student": "cheryl16@thompson.org",
+    "assignment": "Truth 2",
+    "grade": 85.2
+  },
+  {
+    "course": "Intro to Homeruns",
+    "student": "vancechristina@martinez.com",
+    "assignment": "Homework 1",
+    "grade": 88.4
+  },
+  {
+    "course": "Intro to Homeruns",
+    "student": "jeffreychristensen@lawson-ramirez.com",
+    "assignment": "Homework 1",
+    "grade": 32.5
+  },
+  {
+    "course": "Intro to Homeruns",
+    "student": "tiger.woods@golf.com",
+    "assignment": "Midterm",
+    "grade": 74.5
+  },
+  {
+    "course": "Intro to Homeruns",
+    "student": "jeffreychristensen@lawson-ramirez.com",
+    "assignment": "Midterm",
+    "grade": 100
+  },
+  {
+    "course": "Intro to Homeruns",
+    "student": "vancechristina@martinez.com",
+    "assignment": "Midterm",
+    "grade": 100
+  },
+  {
+    "course": "Intro to Homeruns",
+    "student": "tiger.woods@golf.com",
+    "assignment": "Your first homer",
+    "grade": 80
+  },
+  {
+    "course": "Intro to Homeruns",
+    "student": "jeffreychristensen@lawson-ramirez.com",
+    "assignment": "Your first homer",
+    "grade": 80
+  },
+  {
+    "course": "Intro to Homeruns",
+    "student": "vancechristina@martinez.com",
+    "assignment": "Your first homer",
+    "grade": 90
   }
 ]

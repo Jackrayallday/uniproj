@@ -22,21 +22,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const addStatus = document.getElementById('add-course-status');
   const enrollStatus = document.getElementById('enroll-status');
 
-  // Load and display courses
   function loadCourses() {
     fetch('/courses')
-      .then(async res => {
-        const text = await res.text();
-        console.log("Raw response text from /courses:", text);
-        try {
-          return JSON.parse(text);
-        } catch (err) {
-          console.error("Failed to parse JSON:", err);
-          throw new Error("Bad JSON format from server");
-        }
-      })
+      .then(res => res.json())
       .then(data => {
-        console.log("Parsed courses data:", data);
         if (!data.success) {
           courseListDiv.textContent = "Failed to load courses.";
           return;
@@ -51,8 +40,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const list = document.createElement('ul');
         courses.forEach(course => {
           const item = document.createElement('li');
-          item.innerHTML = `<strong>${course.course}</strong><br/>
+          item.innerHTML = `
+            <strong>${course.course}</strong><br/>
             Instructor: ${course.instructor}<br/>
+            <input type="text" placeholder="New Instructor Email" id="change-${course.course}"/>
+            <button onclick="changeInstructor('${course.course}')">Change Instructor</button>
+            <button onclick="removeCourse('${course.course}')">Remove Course</button><br/>
             Students: ${
               course.students.length > 0
                 ? `<ul>` + course.students.map(email => `
@@ -74,7 +67,6 @@ document.addEventListener('DOMContentLoaded', () => {
       });
   }
 
-  // Remove student from course
   window.removeStudent = function(course, studentEmail) {
     if (!confirm(`Are you sure you want to remove ${studentEmail} from ${course}?`)) return;
 
@@ -98,7 +90,57 @@ document.addEventListener('DOMContentLoaded', () => {
       });
   };
 
-  // Handle add course form
+  window.removeCourse = function(course) {
+    if (!confirm(`Are you sure you want to remove the course: ${course}?`)) return;
+
+    fetch('/courses/remove', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ course })
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (!data.success) {
+          alert(data.message || "Failed to remove course.");
+          return;
+        }
+        alert(data.message);
+        loadCourses();
+      })
+      .catch(err => {
+        console.error("Error removing course:", err);
+        alert("Error removing course.");
+      });
+  };
+
+  window.changeInstructor = function(course) {
+    const input = document.getElementById(`change-${course}`);
+    const newEmail = input.value.trim();
+    if (!newEmail) {
+      alert("Please enter a valid instructor email.");
+      return;
+    }
+
+    fetch('/courses/change-instructor', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ course, newInstructor: newEmail })
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (!data.success) {
+          alert(data.message || "Failed to change instructor.");
+          return;
+        }
+        alert(data.message);
+        loadCourses();
+      })
+      .catch(err => {
+        console.error("Error changing instructor:", err);
+        alert("Error changing instructor.");
+      });
+  };
+
   addCourseForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const course = document.getElementById('course-name').value.trim();
@@ -128,7 +170,6 @@ document.addEventListener('DOMContentLoaded', () => {
       });
   });
 
-  // Handle enroll form
   enrollForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const course = document.getElementById('enroll-course-name').value.trim();
@@ -156,6 +197,25 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error("Error enrolling student:", err);
         enrollStatus.textContent = "Error enrolling student.";
       });
+  });
+
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    fetch('/logout', {
+      method: 'POST',
+      credentials: 'include'
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        alert('Logged out successfully!');
+        window.location.href = '/';
+      } else {
+        alert('Logout failed: ' + data.message);
+      }
+    })
+    .catch(err => {
+      console.error('Logout error:', err);
+    });
   });
 
   // Initial load

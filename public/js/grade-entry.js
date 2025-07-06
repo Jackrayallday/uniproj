@@ -10,7 +10,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const gradeInput = document.getElementById('grade-input');
   const form = document.getElementById('grade-form');
   const status = document.getElementById('status');
-
+  document.getElementById('backBtn').addEventListener('click', () => {
+  window.history.back(); // Goes to the last page visited
+});
   // Fetch students enrolled in this course
   fetch(`/courses`)
     .then(res => res.json())
