@@ -344,6 +344,31 @@ app.get('/assignments', (req, res) => {
   });
 });
 
+// View grades for logged-in student
+app.get('/grades/view', requireLogin, requireRole('student'), (req, res) => {
+  const studentEmail = req.session.email;
+
+  // Read grades from file
+  fs.readFile(gradesPath, 'utf8', (err, data) => {
+    if (err) {
+      console.error('Error reading grades file:', err);
+      return res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+
+    let grades = [];
+    try {
+      grades = JSON.parse(data);
+    } catch (parseErr) {
+      console.error('Failed to parse grades file:', parseErr);
+      return res.status(500).json({ success: false, message: 'Data format error' });
+    }
+
+    const studentGrades = grades.filter(entry => entry.student === studentEmail);
+    res.json({ success: true, grades: studentGrades });
+  });
+});
+
+
 app.post('/courses/add', requireLogin, requireRole('admin'), (req, res) => {
   const { course, instructor } = req.body;
 
@@ -584,6 +609,10 @@ app.post('/assignments', (req, res) => {
     });
   });
 });
+
+const gradeRoutes = require('./grades');
+app.use('/grades', gradeRoutes);
+
 
 // Start HTTPS server
 https.createServer(sslOptions, app).listen(PORT, () => {
