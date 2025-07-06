@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Grade Entry</title>
+  <script src="/js/grade-entry.js" defer></script>
+</head>
+<body>
+  <h1>Grade Entry</h1>
+  <p id="course-info"></p>
+  <p id="assignment-info"></p>
+
+  <form id="grade-form">
+    <select id="student-select" required style="min-width: 200px;"></select>
+    <label for="grade-input">Enter Grade:</label>
+    <input type="text" id="grade-input" required />
+
+    <button type="submit">Submit Grade</button>
+  </form>
+
+  <p id="status"></p>
+</body>
+</html>

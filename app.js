@@ -188,6 +188,11 @@ app.get('/instructor.html', requireLogin, requireRole('instructor'), (req, res) 
 app.get('/admin.html', requireLogin, requireRole('admin'), (req, res) => {
   res.sendFile(path.join(__dirname, 'protected_pages', 'admin.html'));
 });
+
+app.get('/grade-entry.html', requireLogin, requireRole('instructor'), (req, res) => {
+  res.sendFile(path.join(__dirname, 'protected_pages', 'grade-entry.html'));
+});
+
 // Route: User Registration
 app.post('/register', (req, res) => {
   const { email, password, role } = req.body;
@@ -253,6 +258,8 @@ app.post('/register', (req, res) => {
 
 // Admin: Course management
 const coursesPath = path.join(__dirname, 'data', 'courses.json');
+const gradesPath = path.join(__dirname, 'data', 'grades.json');
+
 
 app.get('/courses', requireLogin, requirePermission('courses', 'read'), (req, res) => {
   console.log("GET /courses hit by:", req.session.email, "with role:", req.session.role);
