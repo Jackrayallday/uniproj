@@ -7,58 +7,31 @@ const usersPath = path.join(__dirname, 'data', 'users.json');
 const aclPath = path.join(__dirname, 'data', 'acl.json');
 
 const users = [
-  // Students (Golfers)
-  {
-    email: "tiger.woods@golf.com",
-    password: "woods123",
-    role: "student"
-  },
-  {
-    email: "phil.mickelson@golf.com",
-    password: "lefty456",
-    role: "student"
-  },
-  {
-    email: "rory.mcilroy@golf.com",
-    password: "rory789",
-    role: "student"
-  },
+  // Students
+  { email: "tiger.woods@golf.com", password: "woods123", role: "student" },
+  { email: "phil.mickelson@golf.com", password: "lefty456", role: "student" },
+  { email: "rory.mcilroy@golf.com", password: "rory789", role: "student" },
+  { email: "jeffreychristensen@lawson-ramirez.com", password: "jeff123", role: "student" },
+  { email: "cheryl16@thompson.org", password: "cheryl123", role: "student" },
+  { email: "vazquezrobert@jacobson.com", password: "robert123", role: "student" },
+  { email: "vancechristina@martinez.com", password: "christina123", role: "student" },
+  { email: "dgonzalez@morgan-mathews.com", password: "gonzalez123", role: "student" },
 
-  // Instructors (Baseball players)
-  {
-    email: "babe.ruth@mlb.com",
-    password: "ruth456",
-    role: "instructor"
-  },
-  {
-    email: "ken.griffey@mlb.com",
-    password: "swingman1",
-    role: "instructor"
-  },
-  {
-    email: "mike.trout@mlb.com",
-    password: "troutpower",
-    role: "instructor"
-  },
+  // Instructors
+  { email: "babe.ruth@mlb.com", password: "ruth456", role: "instructor" },
+  { email: "ken.griffey@mlb.com", password: "swingman1", role: "instructor" },
+  { email: "mike.trout@mlb.com", password: "troutpower", role: "instructor" },
+  { email: "kenneth59@gmail.com", password: "kenneth123", role: "instructor" },
+  { email: "jcampbell@gmail.com", password: "campbell123", role: "instructor" },
+  { email: "timothyrobinson@guzman-murray.com", password: "timothy123", role: "instructor" },
 
-  // Admins (Mix of baseball/golf legends)
-  {
-    email: "shohei.ohtani@mlb.com",
-    password: "ohtani789",
-    role: "admin"
-  },
-  {
-    email: "jack.nicklaus@golf.com",
-    password: "goldenbear",
-    role: "admin"
-  },
-  {
-    email: "hank.aaron@mlb.com",
-    password: "755homeruns",
-    role: "admin"
-  }
+  // Admins
+  { email: "shohei.ohtani@mlb.com", password: "ohtani789", role: "admin" },
+  { email: "jack.nicklaus@golf.com", password: "goldenbear", role: "admin" },
+  { email: "hank.aaron@mlb.com", password: "755homeruns", role: "admin" },
+  { email: "benjamindavis@carroll.org", password: "benjamin123", role: "admin" },
+  { email: "marcus09@hotmail.com", password: "marcus123", role: "admin" }
 ];
-
 
 const defaultPermissions = {
   student: { courses: ["read"] },
@@ -88,7 +61,7 @@ const generate = async () => {
       role: user.role
     });
 
-    // Only add to ACL if user not already present
+    // Add to ACL if not present
     if (!existingACL[user.email]) {
       existingACL[user.email] = defaultPermissions[user.role] || {};
     }
