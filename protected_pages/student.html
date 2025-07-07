@@ -1,17 +1,22 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Student Dashboard</title>
-  <link rel="stylesheet" href="./css/style.css" />
+  <link rel="stylesheet" href="css/student.css" />
 </head>
 <body>
   <h1>Welcome, Student!</h1>
   <button id="logoutBtn">Log Out</button>
   <p>This is your dashboard.</p>
-  <div id="grades-list"></div>
-  <div id="materialsSection">
-  <div id="materialsContainer"></div>
+
+  <div id="grades-list" class="content-section"></div>
+
+  <div id="materialsSection" class="content-section">
+    <div id="materialsContainer"></div>
   </div>
+
   <script src="js/student.js"></script>
 </body>
 </html>
