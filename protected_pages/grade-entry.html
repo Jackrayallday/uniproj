@@ -2,23 +2,29 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Grade Entry</title>
+  <link rel="stylesheet" href="css/grade-entry.css" />
   <script src="/js/grade-entry.js" defer></script>
-  <link rel="stylesheet" href="./css/style.css" />
 </head>
 <body>
-  <h1>Grade Entry</h1>
-  <p id="course-info"></p>
-  <p id="assignment-info"></p>
-  <button id="backBtn">Back</button>
-  <form id="grade-form">
-    <select id="student-select" required style="min-width: 200px;"></select>
-    <label for="grade-input">Enter Grade:</label>
-    <input type="text" id="grade-input" required />
+  <div class="container">
+    <h1>Grade Entry</h1>
+    <p id="course-info"></p>
+    <p id="assignment-info"></p>
+    <button id="backBtn">Back</button>
+    
+    <form id="grade-form">
+      <label for="student-select">Select Student:</label>
+      <select id="student-select" required></select>
 
-    <button type="submit">Submit Grade</button>
-  </form>
+      <label for="grade-input">Enter Grade:</label>
+      <input type="text" id="grade-input" required />
 
-  <p id="status"></p>
+      <button type="submit">Submit Grade</button>
+    </form>
+
+    <p id="status"></p>
+  </div>
 </body>
 </html>
